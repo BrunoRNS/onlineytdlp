@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en-US" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pytube Online Interface</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="@{/css/main.css}">
+    <link rel="icon" href="@{/images/favicon.jpeg}" type="image/jpeg">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fab fa-youtube"></i>
+            </div>
+            <h1>Pytube Online Interface</h1>
+            <p class="subtitle">Use the pytube/yt-dlp API to download videos/audios from YouTube</p>
+        </header>
+
+        <main style="position: relative;">
+            <div class="card">
+                <div id="form-container" class="form-container">
+                    <form id="download-form" action="@{/download}" method="post">
+                        <div class="form-group">
+                            <label for="url">
+                                <i class="fas fa-link"></i> Youtube URL:
+                            </label>
+                            <input 
+                                type="url"
+                                id="id_input_url"
+                                class="input-field" 
+                                placeholder="https://www.youtube.com/watch?v=..." 
+                                required
+                            >
+                        </div>
+                        
+                        <div class="form-group">
+                            <label><i class="fas fa-file-audio"></i> Select the format:</label>
+                            <div class="radio-group">
+                                <label class="radio-option" id="mp3-option">
+                                    <i class="fas fa-music mp3"></i>
+                                    <span>MP3 (Audio)</span>
+                                    <input type="radio" name="format" value="mp3" checked>
+                                </label>
+                                <label class="radio-option" id="mp4-option">
+                                    <i class="fas fa-video mp4"></i>
+                                    <span>MP4 (Video)</span>
+                                    <input type="radio" name="format" value="mp4">
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="video-preview" id="video-preview">
+                            <img src="" class="video-thumbnail" id="video-thumbnail" alt="Miniatura do vídeo">
+                            <div class="video-title" id="video-title"></div>
+                            <div class="video-duration" id="video-duration"></div>
+                        </div>
+                        
+                        <button type="submit" class="btn" id="submit-btn">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                    </form>
+                </div>
+                
+                <div id="loading-container" class="loading-container">
+                    <img src="@{/images/loading.gif}" alt="Loading" class="loading-image">
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+           <p>&copy; <span th:text="${year}">2025</span> pytubeOnlineInterface - All Rights Reserved</p>
+            <p>Developed by <b><a href="https://github.com/BrunoRNS">BrunoRNS</a></b></p>
+            <div class="footer-links">
+                <a href="https://github.com/BrunoRNS/pytubeOnlineInterface/blob/main/PRIVACITY.md"><i class="fas fa-shield-alt"></i> Privacity</a>
+                <a href="https://github.com/BrunoRNS/pytubeOnlineInterface/blob/main/LICENSE.txt"><i class="fas fa-file-alt"></i> Terms</a>
+                <a href="https://github.com/BrunoRNS/pytubeOnlineInterface/issues"><i class="fas fa-question-circle"></i> Help</a>
+                <a href="https://github.com/BrunoRNS"><i class="fas fa-envelope"></i> Contact</a>
+            </div>
+        </footer>
+    </div>
+
+    <script type="text/javascript">HOME_URL = '@{/}';</script>
+    <script type="text/javascript" src="@{/js/loading.js}"></script>
+    <script type="text/javascript" src="@{/js/main.js}"></script>
+</body>
+</html>
