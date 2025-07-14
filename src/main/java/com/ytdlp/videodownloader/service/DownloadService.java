@@ -64,9 +64,9 @@ public class DownloadService {
 
         switch (format) {
 
-            case "mp4" -> processBuilder = new ProcessBuilder("ytdlp", videoUrl, filePath, format);
+            case "mp4" -> processBuilder = new ProcessBuilder("/usr/local/bin/ytdlp", videoUrl, filePath, format);
 
-            case "mp3" -> processBuilder = new ProcessBuilder("ytdlp", videoUrl, filePath, format);
+            case "mp3" -> processBuilder = new ProcessBuilder("/usr/local/bin/ytdlp", videoUrl, filePath, format);
             
             default -> throw new IllegalArgumentException("Invalid format: " + format);
 
@@ -106,7 +106,7 @@ public class DownloadService {
      */
     private static String sanitizeFilename(String urlVideo, String format) throws RuntimeException {
 
-        ProcessBuilder processBuilder = new ProcessBuilder("ytdlp", "--print-title", urlVideo);
+        ProcessBuilder processBuilder = new ProcessBuilder("/usr/local/bin/ytdlp", "--print-title", urlVideo);
 
         Process process;
 
