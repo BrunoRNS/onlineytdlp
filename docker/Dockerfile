@@ -8,8 +8,11 @@ RUN apt-get update && apt-get install -y ffmpeg \
 RUN adduser --disabled-password --gecos "" appuser
 
 # Copy executables
-COPY videodownloader /usr/local/bin/
-COPY ytdlp /usr/local/bin/
+COPY videodownloader .
+COPY ytdlp .
+
+COPY ./videodownloader /usr/local/bin/
+COPY ./ytdlp /usr/local/bin/
 
 # Set permissions
 RUN chmod +x /usr/local/bin/videodownloader
