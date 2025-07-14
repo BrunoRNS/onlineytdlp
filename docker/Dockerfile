@@ -11,8 +11,8 @@ RUN adduser --disabled-password --gecos "" appuser
 COPY videodownloader .
 COPY ytdlp .
 
-COPY ./videodownloader /usr/local/bin/
-COPY ./ytdlp /usr/local/bin/
+RUN cp ./videodownloader /usr/local/bin/videodownloader
+RUN cp ./ytdlp /usr/local/bin/ytdlp
 
 # Set permissions
 RUN chmod +x /usr/local/bin/videodownloader
