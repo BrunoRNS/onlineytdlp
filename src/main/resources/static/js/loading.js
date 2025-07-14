@@ -23,8 +23,8 @@ function showLoading() {
  */
 function hideLoading() {
 
-  const formContainer = document.getElementById('formContainer');
-  const loadingContainer = document.getElementById('loadingContainer');
+  const formContainer = document.getElementById('form-container');
+  const loadingContainer = document.getElementById('loading-container');
 
   loadingContainer.style.display = 'none';
   formContainer.style.display = 'block';

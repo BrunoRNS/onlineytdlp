@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pytube Online Interface</title>
+    <title>Yt-dlp Online Interface</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="@{/css/main.css}">
-    <link rel="icon" href="@{/images/favicon.jpeg}" type="image/jpeg">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="icon" href="/images/favicon.jpeg" type="image/jpeg">
 </head>
 <body>
     <div class="container">
@@ -14,20 +14,21 @@
             <div class="logo">
                 <i class="fab fa-youtube"></i>
             </div>
-            <h1>Pytube Online Interface</h1>
-            <p class="subtitle">Use the pytube/yt-dlp API to download videos/audios from YouTube</p>
+            <h1>Yt-dlp Online Interface</h1>
+            <p class="subtitle">Use the yt-dlp API to download videos/audios from YouTube</p>
         </header>
 
         <main style="position: relative;">
             <div class="card">
                 <div id="form-container" class="form-container">
-                    <form id="download-form" action="@{/download}" method="post">
+                    <form id="download-form" action="/download" method="post">
                         <div class="form-group">
                             <label for="url">
                                 <i class="fas fa-link"></i> Youtube URL:
                             </label>
                             <input 
                                 type="url"
+                                name="url"
                                 id="id_input_url"
                                 class="input-field" 
                                 placeholder="https://www.youtube.com/watch?v=..." 
@@ -41,16 +42,29 @@
                                 <label class="radio-option" id="mp3-option">
                                     <i class="fas fa-music mp3"></i>
                                     <span>MP3 (Audio)</span>
-                                    <input type="radio" name="format" value="mp3" checked>
+                                    <input type="radio" name="format" value="mp3" required>
                                 </label>
                                 <label class="radio-option" id="mp4-option">
                                     <i class="fas fa-video mp4"></i>
                                     <span>MP4 (Video)</span>
-                                    <input type="radio" name="format" value="mp4">
+                                    <input type="radio" name="format" value="mp4" required>
                                 </label>
                             </div>
                         </div>
-                        
+                        <script type="text/javascript">
+                            const radios = document.querySelectorAll('.radio-option');
+                            radios.forEach(radio => {
+                                radio.addEventListener('click', () => {
+                                    radios.forEach(r => r.classList.remove('selected'));
+                                    radio.classList.add('selected');
+                                });
+                            });
+                        </script>
+                        <style type="text/css">
+                            .selected {
+                                border: 2px solid var(--primary);
+                            }
+                        </style>
                         <div class="video-preview" id="video-preview">
                             <img src="" class="video-thumbnail" id="video-thumbnail" alt="Miniatura do vídeo">
                             <div class="video-title" id="video-title"></div>
@@ -63,26 +77,28 @@
                     </form>
                 </div>
                 
-                <div id="loading-container" class="loading-container">
-                    <img src="@{/images/loading.gif}" alt="Loading" class="loading-image">
+                <div id="loading-container" class="loading-container" style="width: 100%; height: 100%;">
+                    <img src="/images/loading.gif" alt="Loading" class="loading-image" style="transform: scale(0.8);">
                 </div>
             </div>
         </main>
         
         <footer>
-           <p>&copy; <span th:text="${year}">2025</span> pytubeOnlineInterface - All Rights Reserved</p>
+            <p>&copy; <script type="text/javascript" >document.write(new Date().getFullYear());</script> yt-dlp online interface</p>
             <p>Developed by <b><a href="https://github.com/BrunoRNS">BrunoRNS</a></b></p>
             <div class="footer-links">
-                <a href="https://github.com/BrunoRNS/pytubeOnlineInterface/blob/main/PRIVACITY.md"><i class="fas fa-shield-alt"></i> Privacity</a>
-                <a href="https://github.com/BrunoRNS/pytubeOnlineInterface/blob/main/LICENSE.txt"><i class="fas fa-file-alt"></i> Terms</a>
-                <a href="https://github.com/BrunoRNS/pytubeOnlineInterface/issues"><i class="fas fa-question-circle"></i> Help</a>
-                <a href="https://github.com/BrunoRNS"><i class="fas fa-envelope"></i> Contact</a>
+                <a href="https://github.com/BrunoRNS/onlineytdlp/blob/main/PRIVACY.md" target="_blank"><i class="fas fa-shield-alt"></i> Privacy Policy</a>
+                <a href="https://github.com/BrunoRNS/onlineytdlp/blob/main/AGREEMENTS.txt" target="_blank"><i class="fas fa-file-contract"></i> Usage Terms</a>
+                <a href="https://github.com/BrunoRNS/onlineytdlp/blob/main/LICENSE.txt" target="_blank"><i class="fas fa-file-alt"></i> License</a>
+                <a href="https://github.com/BrunoRNS/onlineytdlp/issues" target="_blank"><i class="fas fa-question-circle"></i> Help</a>
+                <a href="https://github.com/BrunoRNS" target="_blank"><i class="fas fa-envelope"></i> Contact</a>
             </div>
+            <p class="legal-notice">By using this service, you agree to our <a href="https://github.com/BrunoRNS/onlineytdlp/blob/main/AGREEMENTS.txt" target="_blank">Usage Terms</a></p>
         </footer>
     </div>
 
-    <script type="text/javascript">HOME_URL = '@{/}';</script>
-    <script type="text/javascript" src="@{/js/loading.js}"></script>
-    <script type="text/javascript" src="@{/js/main.js}"></script>
+    <script type="text/javascript">HOME_URL = '/';</script>
+    <script type="text/javascript" src="/js/loading.js"></script>
+    <script type="text/javascript" src="/js/main.js"></script>
 </body>
 </html>

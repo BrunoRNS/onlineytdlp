@@ -16,17 +16,18 @@ window.addEventListener("DOMContentLoaded", () => {
 
 });
 
+
 /**
- * Downloads the SPA website given in the form.
- *
- * @param {HTMLFormElement} form - The form containing the SPA website URL.
- * @param {FormData} formData - The form data containing the URL.
- *
- * @returns {Promise<void>} - Redirect to home page.
- *
- * @throws {Error} If there is an error while downloading the SPA website.
+ * Downloads the media given a form and a formData object.
+ * 
+ * @param {HTMLFormElement} form - The form containing the URL and format of the media to download.
+ * @param {FormData} formData - The formData object containing the URL and format of the media to download.
+ * 
+ * @throws {Error} - If there is an error while downloading the media.
  */
-function downloadSPA(form, formData) {
+function downloadMedia(form, formData) {
+
+  responseHeader = null;
 
   setTimeout(() => {
     
@@ -39,20 +40,16 @@ function downloadSPA(form, formData) {
 
     .then(async response => {
 
+      responseHeader = response.headers.get('X-Error');
+
       if (!response.ok) {
 
-        return response.text().then(html => {
-
-            document.documentElement.innerHTML = html;
-
-            throw new Error("Invalid Response");
-
-        });
+        throw new Error("HTTP error: " + response.status);
 
       }
 
       const disposition = response.headers.get('Content-Disposition');
-      let filename = 'download.zip';
+      let filename = 'download.mp4';
 
       if (disposition && disposition.includes('filename=')) {
 
@@ -93,17 +90,27 @@ function downloadSPA(form, formData) {
 
       console.error('Error downloading:', error);
 
-      localStorage.setItem('downloadError', 'There was an error while trying to download the spa website.');
+      const errorHeader = responseHeader;
+
+      if (errorHeader && errorHeader != null) {
+
+        localStorage.setItem('downloadError', errorHeader);
+
+      } else {
+
+        localStorage.setItem('downloadError', 'There was an error while trying to download the media.');
+      
+      }
 
       window.location.href = HOME_URL;
 
     });
 
-  }, 5000);
+  }, 2000);
   
 }
 
-document.getElementById('downloadForm').addEventListener('submit', function(e) {
+document.getElementById('download-form').addEventListener('submit', function(e) {
     
   e.preventDefault();
 
@@ -112,6 +119,6 @@ document.getElementById('downloadForm').addEventListener('submit', function(e) {
 
   showLoading();
 
-  downloadSPA(form, formData);
+  downloadMedia(form, formData);
 
 });

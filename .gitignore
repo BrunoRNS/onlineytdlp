@@ -30,3 +30,19 @@ target/
 
 ### VS Code ###
 .vscode/
+
+### Python ###
+__pycache__/
+venv/
+*.pyc
+*.spec
+
+### Tests ###
+*.mp3
+*.mp4
+*.m4a
+
+temp_downloads/
+
+### Make ###
+build/

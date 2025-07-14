@@ -1,7 +1,5 @@
 package com.ytdlp.videodownloader.controller;
 
-import java.time.Year;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +15,6 @@ public class HomeController {
      */
     @GetMapping("/")
     public String home(Model model) {
-        model.addAttribute("year", Year.now().getValue());
         return "index";
     }
 

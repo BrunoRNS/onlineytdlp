@@ -1,0 +1,4 @@
+nuitka>=2.7.12
+pydub>=0.25.1
+pytubefix>=9.3.0
+ordered-set>=4.1.0

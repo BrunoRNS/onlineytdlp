@@ -37,7 +37,7 @@ public class DownloadService {
         try {
             byte[] fileContent = Files.readAllBytes(tempPath);
             Resource resource = new ByteArrayResource(fileContent);
-            String filename = sanitizeFilename(title) + "." + format;
+            String filename = sanitizeFilename(videoUrl, format) + "." + format;
 
             return new DownloadResult(resource, filename);
 
@@ -64,9 +64,9 @@ public class DownloadService {
 
         switch (format) {
 
-            case "mp4" -> processBuilder = new ProcessBuilder("yt-dlp", "-f", "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]", "--merge-output-format", format, videoUrl, "-o", filePath);
+            case "mp4" -> processBuilder = new ProcessBuilder("ytdlp", videoUrl, filePath, format);
 
-            case "mp3" -> processBuilder = new ProcessBuilder("yt-dlp", "-x", "--audio-format", "mp3", videoUrl, "-o", filePath);
+            case "mp3" -> processBuilder = new ProcessBuilder("ytdlp", videoUrl, filePath, format);
             
             default -> throw new IllegalArgumentException("Invalid format: " + format);
 
@@ -104,9 +104,9 @@ public class DownloadService {
      * @return the sanitized filename.
      * @throws RuntimeException if there is an error while sanitizing the filename.
      */
-    private static String sanitizeFilename(String urlVideo) throws RuntimeException {
+    private static String sanitizeFilename(String urlVideo, String format) throws RuntimeException {
 
-        ProcessBuilder processBuilder = new ProcessBuilder("yt-dlp", "--print", "%(title)s", urlVideo);
+        ProcessBuilder processBuilder = new ProcessBuilder("ytdlp", "--print-title", urlVideo);
 
         Process process;
 
@@ -134,7 +134,14 @@ public class DownloadService {
 
             if (!SCANNER.hasNextLine()) {
 
-                return "video" + UUID.randomUUID().toString();
+                switch (format) {
+                    case "mp4" -> {
+                        return "video" + UUID.randomUUID().toString();
+                    }
+                    case "mp3" -> {
+                        return "music" + UUID.randomUUID().toString();
+                    }
+                }
 
             }
             

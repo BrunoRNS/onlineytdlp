@@ -18,8 +18,6 @@ public class DownloadController {
 
     private final DownloadService downloadService;
 
-    private static String normalizedURL = new String();
-
     // Class Constructor
     public DownloadController(DownloadService downloadService) {
 
@@ -41,11 +39,18 @@ public class DownloadController {
             @RequestParam("url") String videoUrl,
             @RequestParam("format") String format) {
 
+        String normalizedURL;
+
         try {
             // Validate if the provided URL is a valid YouTube URL
-            if (!isValidYouTubeUrl(videoUrl)) {
+            try {
+
+                normalizedURL = isValidYouTubeUrl(videoUrl);
+
+            } catch (Exception e) {
                 // Return a bad request response if the URL is not valid
                 return ResponseEntity.badRequest()
+                    .header("X-Error", "Invalid format: the url is not a valid youtube url.")
                     .body(null);
             }
             
@@ -53,11 +58,25 @@ public class DownloadController {
             if (!isValidFormat(format)) {
                 // Return a bad request response if the format is not valid
                 return ResponseEntity.badRequest()
+                    .header("X-Error", "Invalid format: only mp3 and mp4 are supported.")
                     .body(null);
             }
             
             // Attempt to download the video using the provided URL and format
-            DownloadService.DownloadResult result = downloadService.downloadVideo(normalizedURL, format);
+
+            DownloadService.DownloadResult result;
+
+            try {
+
+                result = downloadService.downloadVideo(normalizedURL, format);
+            
+            } catch (IOException e) {
+
+                return ResponseEntity.badRequest()
+                    .header("X-Error", "Error while downloading the media: " + e.getMessage())
+                    .body(null);
+
+            }
             
             // Return the downloaded resource with appropriate headers for file download
             return ResponseEntity.ok()
@@ -66,9 +85,11 @@ public class DownloadController {
                         "attachment; filename=\"" + result.filename() + "\"")
                 .body(result.resource());
             
-        } catch (IOException e) {
+        } catch (Exception e) {
+
             // Handle exceptions by returning an internal server error response
             return ResponseEntity.internalServerError()
+                .header("X-Error", "Error while processing data: " + e.getMessage())
                 .body(null);
         }
     }
@@ -79,10 +100,10 @@ public class DownloadController {
      * @param url the URL to be validated.
      * @return true if the URL is a valid YouTube URL, otherwise false.
      */
-    private boolean isValidYouTubeUrl(String url) {
+    private String isValidYouTubeUrl(String url) {
 
         if (url == null) {
-            return false;
+            throw new IllegalArgumentException("URL cannot be null");
         }
 
         // The regex pattern to match a valid YouTube URL.
@@ -93,19 +114,19 @@ public class DownloadController {
         java.util.regex.Matcher matcher = pattern.matcher(url);
 
         if (!matcher.matches()) {
-            return false;
+            throw new IllegalArgumentException("Invalid YouTube URL");
         }
 
         // The video Id must be 11 characters long.
         String videoId = matcher.group(4);
         if (videoId == null || videoId.length() != 11) {
-            return false;
+            throw new IllegalArgumentException("Invalid YouTube URL");
         }
 
         // Normalize the URL to the watch page URL.
-        normalizedURL = "https://www.youtube.com/watch?v=" + videoId;
+        String normalizedURL = "https://www.youtube.com/watch?v=" + videoId;
 
-        return true;
+        return normalizedURL;
     }
 
     /**
