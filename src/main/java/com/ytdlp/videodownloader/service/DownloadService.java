@@ -83,13 +83,13 @@ public class DownloadService {
         } catch (InterruptedException e) {
 
             Thread.currentThread().interrupt();
-            throw new IOException("Failed to download video");
+            throw new IOException("Failed to download video, interrupted: " + e.toString());
 
         }
 
         if (exitCode != 0) {
 
-            throw new IOException("Failed to download video");
+            throw new IOException("Failed to download video: " + new String(process.getErrorStream().readAllBytes()));
 
         }
     }
