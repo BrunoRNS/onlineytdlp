@@ -11,4 +11,4 @@ RUN chmod +x /usr/local/bin/ytdlp
 WORKDIR /app
 
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "videodownloader.jar"]
+ENTRYPOINT ["java", "-XX:ActiveProcessorCount=1", "-Xmx500M", "-jar", "videodownloader.jar"]
