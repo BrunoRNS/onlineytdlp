@@ -1,22 +1,14 @@
-FROM --platform=linux/amd64 ubuntu:24.04
+FROM --platform=linux/amd64 eclipse-temurin:17-jre-debian
 
-# Install dependencies
-RUN apt-get update && apt-get install -y ffmpeg \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y ffmpeg && \
+    rm -rf /var/lib/apt/lists/*
 
-# Copy executables
-COPY videodownloader .
-COPY ytdlp .
+COPY videodownloader-1.0.0.jar /app/videodownloader.jar
+COPY ytdlp /usr/local/bin/ytdlp
 
-RUN cp ./videodownloader /usr/local/bin/videodownloader
-RUN cp ./ytdlp /usr/local/bin/ytdlp
-
-# Set permissions
-RUN chmod +x /usr/local/bin/videodownloader
 RUN chmod +x /usr/local/bin/ytdlp
 
 WORKDIR /app
 
-# Expose port and set entrypoint
 EXPOSE 8080
-ENTRYPOINT ["videodownloader"]
+ENTRYPOINT ["java", "-jar", "videodownloader.jar"]
