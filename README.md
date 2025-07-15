@@ -33,7 +33,7 @@ A simple web interface to run yt-dlp online and easily manipulate YouTube videos
 
 ## For Developers
 
-[See the technical documentation](DOCS.md)
+[See the technical documentation](docs/DOCS.md)
 
 ## License
 
