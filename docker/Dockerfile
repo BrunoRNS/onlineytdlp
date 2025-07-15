@@ -1,6 +1,6 @@
-FROM --platform=linux/amd64 eclipse-temurin:21-jre
+FROM --platform=linux/amd64 eclipse-temurin:21-jre-noble
 
-RUN apt-get update && apt-get install -y ffmpeg && \
+RUN apt-get update && apt-get install -y ffmpeg nodejs npm ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
 COPY videodownloader-1.0.0.jar /app/videodownloader.jar

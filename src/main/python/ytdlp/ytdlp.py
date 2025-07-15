@@ -127,7 +127,7 @@ class YouTubeDownloader:
             output_path, file_name = self._parse_filename(output_full_path)
             
             # Create YouTube object
-            yt: YouTube = YouTube(url)
+            yt: YouTube = YouTube(url, "WEB")
             self.logger.info(f"Video title: {yt.title}")
             
             # Process based on format using match case (Python 3.10+)
