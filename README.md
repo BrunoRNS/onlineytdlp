@@ -38,3 +38,7 @@ A simple web interface to run yt-dlp online and easily manipulate YouTube videos
 ## License
 
 This software is licensed under the GNU General Public License v3.0 (GPL v3) and its terms of use and privacy can be found in [AGREEMENTS.md](AGREEMENTS.md) and [PRIVACY.md](PRIVACY.md). By using this software, you agree to the terms of use and privacy described in this file.
+
+## Acknowledgments
+
+> It is normal to receive a 429 too many requests HTTP error when downloading the media, this is due to the YouTube servers and pytubefix and not this software. Please try again later.
