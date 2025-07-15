@@ -73,7 +73,7 @@ public class DownloadController {
             } catch (IOException e) {
 
                 return ResponseEntity.badRequest()
-                    .header("X-Error", "Error while downloading the media: " + e.getMessage())
+                    .header("X-Error", "Error while downloading the media: " + e.getMessage().replaceAll("[\\r\\n]", " "))
                     .body(null);
 
             }
@@ -89,7 +89,7 @@ public class DownloadController {
 
             // Handle exceptions by returning an internal server error response
             return ResponseEntity.internalServerError()
-                .header("X-Error", "Error while processing data: " + e.getMessage())
+                .header("X-Error", "Error while processing data: " + e.getMessage().replaceAll("[\\r\\n]", " "))
                 .body(null);
         }
     }
