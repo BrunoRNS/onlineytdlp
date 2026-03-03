@@ -1,22 +1,20 @@
-FROM alpine:latest
+FROM debian:stable-slim
 
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y \
     ffmpeg \
     nodejs \
     npm \
-    ca-certificates
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY videodownloader /app/videodownloader
 COPY ytdlp /usr/local/bin/ytdlp
 
-RUN chmod +x /app/videodownloader
-RUN chmod +x /usr/local/bin/ytdlp
+RUN chmod +x /app/videodownloader /usr/local/bin/ytdlp \
+    && groupadd -r appgroup && useradd -r -g appgroup appuser
 
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 USER appuser
-
 WORKDIR /app
 
 EXPOSE 8080
-
 ENTRYPOINT ["/app/videodownloader"]
