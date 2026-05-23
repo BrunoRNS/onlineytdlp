@@ -100,7 +100,7 @@ public class DownloadController {
      * @param url the URL to be validated.
      * @return true if the URL is a valid YouTube URL, otherwise false.
      */
-    private String isValidYouTubeUrl(String url) {
+    public static String isValidYouTubeUrl(String url) {
 
         if (url == null) {
             throw new IllegalArgumentException("URL cannot be null");
@@ -135,9 +135,10 @@ public class DownloadController {
      * @param format the format to be validated, expects "mp3" or "mp4".
      * @return true if the format is "mp3" or "mp4", otherwise false.
      */
-    private boolean isValidFormat(String format) {
+    public static boolean isValidFormat(String format) {
 
         return "mp3".equals(format) || "mp4".equals(format);
 
     }
+    
 }

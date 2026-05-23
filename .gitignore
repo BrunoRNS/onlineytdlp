@@ -46,3 +46,7 @@ temp_downloads/
 
 ### Make ###
 build/
+
+### 2.0 Fixes ###
+.mvn
+.vscode

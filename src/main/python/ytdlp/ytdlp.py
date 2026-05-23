@@ -1,7 +1,7 @@
 from pydub import AudioSegment # type: ignore
 from pytubefix import YouTube # type: ignore
 
-from typing import Optional, Tuple
+from typing import Any, List, Optional, Tuple
 
 import sys
 import os
@@ -11,29 +11,38 @@ import logging
 class YouTubeDownloader:
     def __init__(self) -> None:
         """Initialize the YouTube downloader with logging setup"""
+        
         self.logger = self._setup_logger()
     
     def _setup_logger(self) -> logging.Logger:
         """Configure the logging system"""
+        
         logging.basicConfig(
             level=logging.INFO,
-            format='%(asctime)s - %(levelname)s - %(message)s'
+            format='%(asctime)s - %(levelname)s - %(message)s',
+            filename='ytdlp.log',
+            filemode='a',
         )
+        
         return logging.getLogger(__name__)
     
     def _ensure_directory_exists(self, path: str) -> None:
         """Ensure the target directory exists"""
+        
         dir_path = os.path.dirname(path) if os.path.dirname(path) else '.'
         os.makedirs(dir_path, exist_ok=True)
+        
         self.logger.debug(f"Directory verified/created: {dir_path}")
     
     def _parse_filename(self, full_path: str) -> Tuple[str, str]:
         """Split full path into directory and filename components"""
+        
         dir_path = os.path.dirname(full_path) if os.path.dirname(full_path) else '.'
         file_name = os.path.basename(full_path)
+        
         return (dir_path, file_name)
     
-    def _download_audio(self, yt: YouTube, output_path: str, file_name: str) -> str:
+    def _download_audio(self, yt: Any, output_path: str, file_name: str) -> str:
         """
         Download and convert audio to MP3 with specific settings
         
@@ -51,22 +60,19 @@ class YouTubeDownloader:
         try:
             self.logger.info("Starting audio download...")
             
-            # Create temp directory if it doesn't exist
             temp_dir = "temp_downloads"
             os.makedirs(temp_dir, exist_ok=True)
             
-            # Download audio (best available quality)
             audio_stream = yt.streams.get_audio_only()
             temp_file = os.path.join(temp_dir, "temp_audio.m4a")
             audio_stream.download(output_path=temp_dir, filename="temp_audio.m4a") # type: ignore
             
-            # Convert to MP3 with specific settings
             self.logger.info("Converting to MP3 (32000Hz, 180kbps)...")
-            sound: AudioSegment = AudioSegment.from_file(temp_file)
-            sound = sound.set_frame_rate(32000)
+            sound: Any = AudioSegment.from_file(temp_file) # type: ignore
+            sound = sound.set_frame_rate(32000) # type: ignore
             
             output_file = os.path.join(output_path, file_name)
-            sound.export(output_file, format="mp3", bitrate="180k")
+            sound.export(output_file, format="mp3", bitrate="180k") # type: ignore
             
             # Remove temp file
             os.remove(temp_file)
@@ -77,7 +83,7 @@ class YouTubeDownloader:
             self.logger.error(f"Error processing audio: {e}")
             raise
     
-    def _download_video(self, yt: YouTube, output_path: str, file_name: str) -> str:
+    def _download_video(self, yt: Any, output_path: str, file_name: str) -> str:
         """
         Download video in MP4 format (highest resolution)
         
@@ -96,8 +102,11 @@ class YouTubeDownloader:
             self.logger.info("Starting video download...")
             stream = yt.streams.get_highest_resolution()
             output_file = stream.download(output_path=output_path, filename=file_name) # type: ignore
+            
             self.logger.info(f"Video successfully downloaded: {output_file}")
+            
             return output_file # type: ignore
+        
         except Exception as e:
             self.logger.error(f"Error downloading video: {e}")
             raise
@@ -122,15 +131,12 @@ class YouTubeDownloader:
         try:
             self.logger.info(f"Starting download from: {url}")
             
-            # Validate and prepare paths
             self._ensure_directory_exists(output_full_path)
             output_path, file_name = self._parse_filename(output_full_path)
             
-            # Create YouTube object
-            yt: YouTube = YouTube(url, "WEB")
-            self.logger.info(f"Video title: {yt.title}")
+            yt: Any = YouTube(url, "WEB") # type: ignore
+            self.logger.info(f"Video title: {yt.title}") # type: ignore
             
-            # Process based on format using match case (Python 3.10+)
             match format_type.lower():
                 case "mp3":
                     return self._download_audio(yt, output_path, file_name)
@@ -154,11 +160,11 @@ def viewVideoTitle(url: str) -> str:
         Title of the YouTube video
     """
     
-    yt: YouTube = YouTube(url)
+    yt: Any = YouTube(url) # type: ignore
     
-    return yt.title
+    return yt.title # type: ignore
 
-def verifyArgs(args) -> bool:
+def verifyArgs(args: List[str]) -> bool:
     
     if args[0] == "--print-title" and len(args) == 2:
         return True
