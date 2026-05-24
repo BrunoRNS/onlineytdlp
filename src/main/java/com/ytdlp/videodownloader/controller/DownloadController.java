@@ -18,7 +18,11 @@ public class DownloadController {
 
     private final DownloadService downloadService;
 
-    // Class Constructor
+    /**
+     * Constructor for the DownloadController class.
+     * 
+     * @param downloadService
+     */
     public DownloadController(DownloadService downloadService) {
 
         this.downloadService = downloadService;
@@ -42,27 +46,21 @@ public class DownloadController {
         String normalizedURL;
 
         try {
-            // Validate if the provided URL is a valid YouTube URL
             try {
 
                 normalizedURL = isValidYouTubeUrl(videoUrl);
 
             } catch (Exception e) {
-                // Return a bad request response if the URL is not valid
                 return ResponseEntity.badRequest()
                     .header("X-Error", "Invalid format: the url is not a valid youtube url.")
                     .body(null);
             }
             
-            // Validate if the requested format is supported
             if (!isValidFormat(format)) {
-                // Return a bad request response if the format is not valid
                 return ResponseEntity.badRequest()
                     .header("X-Error", "Invalid format: only mp3 and mp4 are supported.")
                     .body(null);
             }
-            
-            // Attempt to download the video using the provided URL and format
 
             DownloadService.DownloadResult result;
 
@@ -78,7 +76,6 @@ public class DownloadController {
 
             }
             
-            // Return the downloaded resource with appropriate headers for file download
             return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .header(HttpHeaders.CONTENT_DISPOSITION, 
@@ -87,9 +84,10 @@ public class DownloadController {
             
         } catch (Exception e) {
 
-            // Handle exceptions by returning an internal server error response
             return ResponseEntity.internalServerError()
-                .header("X-Error", "Error while processing data: " + e.getMessage().replaceAll("[\\r\\n]", " "))
+                .header("X-Error", "Error while processing data: " + e.getMessage().replaceAll(
+                    "[\\r\\n]", " "
+                ))
                 .body(null);
         }
     }
@@ -117,13 +115,11 @@ public class DownloadController {
             throw new IllegalArgumentException("Invalid YouTube URL");
         }
 
-        // The video Id must be 11 characters long.
         String videoId = matcher.group(4);
         if (videoId == null || videoId.length() != 11) {
             throw new IllegalArgumentException("Invalid YouTube URL");
         }
 
-        // Normalize the URL to the watch page URL.
         String normalizedURL = "https://www.youtube.com/watch?v=" + videoId;
 
         return normalizedURL;

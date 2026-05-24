@@ -16,7 +16,8 @@ public class SecurityConfig {
      * @throws Exception if an error occurs while building the security filter chain
      */
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    @SuppressWarnings("unused")
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
 
@@ -28,4 +29,5 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 }

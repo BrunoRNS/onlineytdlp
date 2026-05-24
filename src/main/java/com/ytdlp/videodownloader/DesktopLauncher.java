@@ -1,13 +1,30 @@
 package com.ytdlp.videodownloader;
 
-import com.ytdlp.videodownloader.controller.DownloadController;
-import com.ytdlp.videodownloader.service.DownloadService;
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.io.File;
+import java.io.IOException;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
+
+import org.springframework.beans.BeansException;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
+
+import com.ytdlp.videodownloader.controller.DownloadController;
+import com.ytdlp.videodownloader.service.DownloadService;
 
 
 public class DesktopLauncher extends JFrame {
@@ -23,22 +40,23 @@ public class DesktopLauncher extends JFrame {
 
     public DesktopLauncher() {
 
-        setTitle("YT-DLP Video Downloader Desktop");
-        setSize(540, 290);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setResizable(false);
+        this.setTitle("YT-DLP Video Downloader Desktop");
+        this.setSize(600, 750);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setLocationRelativeTo(null);
+        this.setResizable(false);
 
         JPanel mainPanel = new JPanel(new GridBagLayout());
+
         mainPanel.setBorder(new EmptyBorder(18, 18, 18, 18));
-        add(mainPanel);
+        this.add(mainPanel);
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(6, 6, 6, 6);
 
         gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 1; gbc.weightx = 0.0;
-        mainPanel.add(new JLabel("URL do Vídeo:"), gbc);
+        mainPanel.add(new JLabel(":"), gbc);
 
         txtUrl = new JTextField();
         gbc.gridx = 1; gbc.gridwidth = 2; gbc.weightx = 1.0;
@@ -96,6 +114,8 @@ public class DesktopLauncher extends JFrame {
         btnDownload.addActionListener(e -> processarFluxoDownloadExecutável());
     }
 
+
+    @SuppressWarnings("UseSpecificCatch")
     private void processarFluxoDownloadExecutável() {
         String urlRaw = txtUrl.getText().trim();
         String formatoEscolhido = (String) cbFormat.getSelectedItem();
@@ -120,27 +140,28 @@ public class DesktopLauncher extends JFrame {
         new Thread(() -> {
             try {
                 DownloadService downloadService = springContext.getBean(DownloadService.class);
-                
                 downloadService.downloadVideoLocally(urlFinalValidada, formatoEscolhido, pastaDestino);
-
                 SwingUtilities.invokeLater(() -> {
                     progressBar.setIndeterminate(false);
                     progressBar.setValue(100);
                     progressBar.setString("Download Concluído com Sucesso!");
-                    JOptionPane.showMessageDialog(this, 
-                            "Mídia baixada e processada na pasta selecionada!", 
-                            "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(DesktopLauncher.this, "Mídia baixada e processada na pasta selecionada!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
                     limparEMesclarInterface();
                 });
-
+            } catch (IOException | BeansException ex) {
+                SwingUtilities.invokeLater(() -> {
+                    progressBar.setIndeterminate(false);
+                    progressBar.setValue(0);
+                    progressBar.setString("Falha na execução.");
+                    JOptionPane.showMessageDialog(DesktopLauncher.this, "Erro crítico durante o download:\n" + ex.getMessage(), "Erro de Execução", JOptionPane.ERROR_MESSAGE);
+                    bloquearComponentesInterface(true);
+                });
             } catch (Exception ex) {
                 SwingUtilities.invokeLater(() -> {
                     progressBar.setIndeterminate(false);
                     progressBar.setValue(0);
                     progressBar.setString("Falha na execução.");
-                    JOptionPane.showMessageDialog(this, 
-                            "Erro crítico durante o download:\n" + ex.getMessage(), 
-                            "Erro de Execução", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(DesktopLauncher.this, "Erro crítico durante o download:\n" + ex.getMessage(), "Erro de Execução", JOptionPane.ERROR_MESSAGE);
                     bloquearComponentesInterface(true);
                 });
             }
