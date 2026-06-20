@@ -7,7 +7,7 @@ function showLoading() {
 
   const formContainer = document.getElementById('form-container');
   const loadingContainer = document.getElementById('loading-container');
-    
+
   formContainer.style.display = 'none';
   loadingContainer.style.display = 'flex';
 
@@ -30,5 +30,5 @@ function hideLoading() {
   formContainer.style.display = 'block';
 
   return true;
-  
+
 }

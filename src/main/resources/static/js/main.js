@@ -1,18 +1,18 @@
 window.addEventListener("DOMContentLoaded", () => {
 
-    hideLoading();
+  hideLoading();
 
-    const input = document.getElementById("id_input_url");
-    input.value = '';
+  const input = document.getElementById("id_input_url");
+  input.value = '';
 
-    const errorMsg = localStorage.getItem('downloadError');
+  const errorMsg = localStorage.getItem('downloadError');
 
-    if (errorMsg) {
+  if (errorMsg) {
 
-        alert("❌ ERROR: " + errorMsg);
-        localStorage.removeItem('downloadError');
+    alert("❌ ERROR: " + errorMsg);
+    localStorage.removeItem('downloadError');
 
-    }
+  }
 
 });
 
@@ -30,88 +30,88 @@ function downloadMedia(form, formData) {
   responseHeader = null;
 
   setTimeout(() => {
-    
+
     fetch(form.action, {
 
       method: 'POST',
       body: formData,
-      
+
     })
 
-    .then(async response => {
+      .then(async response => {
 
-      responseHeader = response.headers.get('X-Error');
+        responseHeader = response.headers.get('X-Error');
 
-      if (!response.ok) {
+        if (!response.ok) {
 
-        throw new Error("HTTP error: " + response.status);
-
-      }
-
-      const disposition = response.headers.get('Content-Disposition');
-      let filename = 'download.mp4';
-
-      if (disposition && disposition.includes('filename=')) {
-
-        const match = disposition.match(/filename="?([^"]+)"?/);
-
-        if (match && match[1]) {
-
-          filename = match[1];
+          throw new Error("HTTP error: " + response.status);
 
         }
 
-      }
+        const disposition = response.headers.get('Content-Disposition');
+        let filename = 'download.mp4';
 
-      const blob = await response.blob();
+        if (disposition && disposition.includes('filename=')) {
+
+          const match = disposition.match(/filename="?([^"]+)"?/);
+
+          if (match && match[1]) {
+
+            filename = match[1];
+
+          }
+
+        }
+
+        const blob = await response.blob();
         return ({ blob, filename });
 
-    })
+      })
 
-    .then(({ blob, filename }) => {
+      .then(({ blob, filename }) => {
 
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
 
-      a.href = url;
-      a.download = filename;
+        a.href = url;
+        a.download = filename;
 
-      document.body.appendChild(a);
+        document.body.appendChild(a);
 
-      a.click();
-      a.remove();
+        a.click();
+        a.remove();
 
-      window.URL.revokeObjectURL(url);
+        window.URL.revokeObjectURL(url);
 
-      window.location.href = HOME_URL;
+        window.location.href = HOME_URL;
 
-    })
-    .catch(error => {
+      })
+      .catch(error => {
 
-      console.error('Error downloading:', error);
+        console.error('Error downloading:', error);
 
-      const errorHeader = responseHeader;
+        const errorHeader = responseHeader;
 
-      if (errorHeader && errorHeader != null) {
+        if (errorHeader && errorHeader != null) {
 
-        localStorage.setItem('downloadError', errorHeader);
+          localStorage.setItem('downloadError', errorHeader);
 
-      } else {
+        } else {
 
-        localStorage.setItem('downloadError', 'There was an error while trying to download the media.');
-      
-      }
+          localStorage.setItem('downloadError', 'There was an error while trying to download the media.');
 
-      window.location.href = HOME_URL;
+        }
 
-    });
+        window.location.href = HOME_URL;
+
+      });
 
   }, 2000);
-  
+
 }
 
-document.getElementById('download-form').addEventListener('submit', function(e) {
-    
+document.getElementById('download-form').addEventListener('submit', function (e) {
+
   e.preventDefault();
 
   const form = e.target;

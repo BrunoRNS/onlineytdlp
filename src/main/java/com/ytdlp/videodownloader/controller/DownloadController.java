@@ -1,6 +1,8 @@
 package com.ytdlp.videodownloader.controller;
 
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -50,7 +52,7 @@ public class DownloadController {
 
                 normalizedURL = isValidYouTubeUrl(videoUrl);
 
-            } catch (Exception e) {
+            } catch (IllegalArgumentException e) {
                 return ResponseEntity.badRequest()
                     .header("X-Error", "Invalid format: the url is not a valid youtube url.")
                     .body(null);
@@ -82,6 +84,12 @@ public class DownloadController {
                         "attachment; filename=\"" + result.filename() + "\"")
                 .body(result.resource());
             
+        } catch (IllegalArgumentException e) {
+
+            return ResponseEntity.badRequest()
+                .header("X-Error", "Invalid input: " + e.getMessage())
+                .body(null);
+
         } catch (Exception e) {
 
             return ResponseEntity.internalServerError()
@@ -98,7 +106,8 @@ public class DownloadController {
      * @param url the URL to be validated.
      * @return true if the URL is a valid YouTube URL, otherwise false.
      */
-    public static String isValidYouTubeUrl(String url) {
+    public static String isValidYouTubeUrl(String url) 
+    throws IllegalArgumentException {
 
         if (url == null) {
             throw new IllegalArgumentException("URL cannot be null");
@@ -108,8 +117,8 @@ public class DownloadController {
         // The pattern is taken from the official YouTube API documentation.
         // https://developers.google.com/youtube/v3/getting-started#terms
         String regex = "^(https?://)?(www\\.)?(youtube\\.com/watch\\?v=|youtu\\.be/)([\\w-]{11})([&?].*)?$";
-        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(regex);
-        java.util.regex.Matcher matcher = pattern.matcher(url);
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(url);
 
         if (!matcher.matches()) {
             throw new IllegalArgumentException("Invalid YouTube URL");

@@ -86,21 +86,22 @@ h1 {
 }
 
 #form-container {
-  position: relative; 
-  display: flex; 
-  justify-content: center;
-  align-items: center;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 #loading-container {
-  display: none; /* Hidden by default */
-  position: relative;
-  width: 100%;
-  height: 100%;
-  z-index: 9999;
+    display: none;
+    /* Hidden by default */
+    position: relative;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
 
-  justify-content: center;
-  align-items: center;
+    justify-content: center;
+    align-items: center;
 }
 
 .loading-image {
@@ -244,8 +245,13 @@ label {
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 .loading-text {
@@ -328,25 +334,39 @@ footer {
 
 /* Animações */
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes slideUp {
-    from { 
+    from {
         opacity: 0;
         transform: translateY(30px);
     }
-    to { 
+
+    to {
         opacity: 1;
         transform: translateY(0);
     }
 }
 
 @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
 }
 
 /* Media Queries */
@@ -354,33 +374,33 @@ footer {
     .container {
         padding: 10px;
     }
-    
+
     header {
         padding: 15px 0 20px;
     }
-    
+
     .logo {
         font-size: 2.8rem;
     }
-    
+
     h1 {
         font-size: 2rem;
     }
-    
+
     .card {
         padding: 20px;
     }
-    
+
     .radio-group {
         gap: 12px;
     }
-    
+
     .radio-option {
         padding: 10px 15px;
         flex: 1;
         min-width: 120px;
     }
-    
+
     .btn {
         padding: 16px;
         font-size: 1.1rem;
@@ -391,19 +411,19 @@ footer {
     h1 {
         font-size: 1.8rem;
     }
-    
+
     .subtitle {
         font-size: 1rem;
     }
-    
+
     .radio-group {
         flex-direction: column;
     }
-    
+
     .radio-option {
         width: 100%;
     }
-    
+
     .input-field {
         padding: 14px;
     }
@@ -414,16 +434,16 @@ footer {
     body {
         font-size: 18px;
     }
-    
+
     .container {
         max-width: 1000px;
     }
-    
+
     .input-field {
         padding: 18px;
         font-size: 1.1rem;
     }
-    
+
     .btn {
         padding: 20px;
         font-size: 1.3rem;

@@ -24,7 +24,7 @@ pom.xml                    # Maven configuration
 
 ## Prerequisites
 
-- Java 21
+- Java 17+
 - Maven
 - Python 3.10+
 - GraalVM (for native build)

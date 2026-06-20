@@ -34,6 +34,7 @@ target/
 ### Python ###
 __pycache__/
 venv/
+.venv/
 *.pyc
 *.spec
 
@@ -48,5 +49,4 @@ temp_downloads/
 build/
 
 ### 2.0 Fixes ###
-.mvn
 .vscode

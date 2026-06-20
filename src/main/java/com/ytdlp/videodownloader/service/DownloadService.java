@@ -23,8 +23,9 @@ public class DownloadService {
     /**
      * Generates the path to the yt-dlp executable.
      * 
-     * The path is generated based on the current operating system and the location of the jar file.
-     * It gets the ytdlp path for 64 and 32 bits operating systems.
+     * The path is generated based on the current operating system and the 
+     * location of the jar file. It gets the ytdlp path for 64 and 32 bits 
+     * operating systems.
      * 
      */
     private void generateYtDlpPath() {
@@ -86,6 +87,8 @@ public class DownloadService {
         String title = UUID.randomUUID().toString();
         Path tempPath = Paths.get(System.getProperty("java.io.tmpdir"), title + "." + format);
 
+        this.generateYtDlpPath();
+        
         this.download(videoUrl, tempPath.toString(), format);
 
         try {
