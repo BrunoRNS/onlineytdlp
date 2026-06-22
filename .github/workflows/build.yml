@@ -9,6 +9,9 @@ jobs:
   build-windows-x64-jpackage:
     runs-on: windows-latest
     name: "Windows x64 - jpackage"
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -32,6 +35,9 @@ jobs:
   build-windows-x64-graal:
     runs-on: windows-latest
     name: "Windows x64 - GraalVM"
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v4
       - uses: graalvm/setup-graalvm@v1
@@ -52,10 +58,12 @@ jobs:
             build/graal/
             build/python/
 
-
   build-windows-x86-jpackage:
     runs-on: windows-latest
     name: "Windows x86 - jpackage"
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -77,7 +85,6 @@ jobs:
             build/package/
             build/python/
 
-
   build-linux-x64-jpackage:
     runs-on: ubuntu-latest
     name: "Linux x64 - jpackage"
@@ -93,7 +100,7 @@ jobs:
           python-version: '3.12'
       - run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential pkg-config libffi-dev libssl-dev upx-ucl
+          sudo apt-get install -y build-essential pkg-config libffi-dev libssl-dev upx-ucl liblzma-dev xz-utils
       - run: make build-python
       - run: make build-package JP_TARGET=linux
       - uses: actions/upload-artifact@v4
@@ -119,7 +126,7 @@ jobs:
           python-version: '3.12'
       - run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential pkg-config libffi-dev libssl-dev upx-ucl
+          sudo apt-get install -y build-essential pkg-config libffi-dev libssl-dev upx-ucl liblzma-dev xz-utils
       - run: make build-python
       - run: make build-graal
       - uses: actions/upload-artifact@v4
@@ -145,7 +152,7 @@ jobs:
           python-version: '3.12'
       - run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential pkg-config libffi-dev libssl-dev upx-ucl
+          sudo apt-get install -y build-essential pkg-config libffi-dev libssl-dev upx-ucl liblzma-dev xz-utils
       - run: make update-docker
       - uses: actions/upload-artifact@v4
         with:

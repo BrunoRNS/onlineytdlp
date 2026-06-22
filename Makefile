@@ -1,37 +1,35 @@
-# YT-DLP Online Interface – Build System
-# ----------------------------------------------------------------------
-# This Makefile handles compilation of Java (Maven), Python (Nuitka),
-# and packaging for desktop/web/GraalVM/Docker.
-#
-# Linux users: you MUST install upx-ucl to keep the Python binary below
-# 100 MB. On Debian/Ubuntu:   sudo apt install upx-ucl
-#
-# Optional: skip FFmpeg bundling to reduce binary size even further
-# (the executable will then rely on a system‑installed ffmpeg).
-#
-#   make build-python BUNDLE_FFMPEG=0
-#
-# All targets that depend on Python automatically respect this flag.
-#
-# Extra Maven profiles can be passed via MVN_EXTRA_PROFILES, e.g.:
-#   make build-package MVN_EXTRA_PROFILES=,win-x86
-# ----------------------------------------------------------------------
-
 SHELL := /bin/bash
 MVN   := ./mvnw
-PY    := python3
-VENV  := .venv
-PIP   := $(VENV)/bin/pip
-PYTHON:= $(VENV)/bin/python
+PLATFORM := $(shell uname -s 2>/dev/null || echo Windows)
+ifeq ($(findstring MINGW,$(PLATFORM)),MINGW)
+    OS_IS_WINDOWS := yes
+else ifeq ($(findstring MSYS,$(PLATFORM)),MSYS)
+    OS_IS_WINDOWS := yes
+else ifeq ($(PLATFORM),Windows)
+    OS_IS_WINDOWS := yes
+else
+    OS_IS_WINDOWS := no
+endif
+
+PY := $(if $(filter yes,$(OS_IS_WINDOWS)),python,python3)
+
+ifeq ($(OS_IS_WINDOWS),yes)
+    VENV := .venv
+    PIP := $(VENV)/Scripts/pip
+    PYTHON := $(VENV)/Scripts/python
+    CHMOD := @rem
+else
+    VENV := .venv
+    PIP := $(VENV)/bin/pip
+    PYTHON := $(VENV)/bin/python
+    CHMOD := chmod +x
+endif
+
 JPACKAGE := $(shell command -v jpackage 2>/dev/null || true)
 VERSION  := 2.0.0
 
-# Additional Maven profiles (comma-separated, e.g. ,win-x86)
 MVN_EXTRA_PROFILES ?=
 
-# ----------------------------------------------------------------------
-# Build output directories
-# ----------------------------------------------------------------------
 BUILD_DIR        := build
 BUILD_WEB_DIR    := $(BUILD_DIR)/web
 BUILD_PACKAGE_DIR:= $(BUILD_DIR)/package
@@ -41,9 +39,6 @@ BUILD_PYTHON_DIR := $(BUILD_DIR)/python
 DOCKER_DIR       := docker
 DOCKER_PYTHON    := $(DOCKER_DIR)/ytdlp
 
-# ----------------------------------------------------------------------
-# Maven / Graal / Nuitka output paths
-# ----------------------------------------------------------------------
 TARGET_JAR         := target/videodownloader-$(VERSION).jar
 TARGET_NATIVE      := target/videodownloader
 TARGET_JPACKAGE_DIR:= target/jpackage
@@ -51,33 +46,18 @@ TARGET_PYTHON_DIR  := target/python_build
 PYTHON_EXEC        := ytdlp
 TARGET_PYTHON_EXEC := $(TARGET_PYTHON_DIR)/$(PYTHON_EXEC)
 
-# ----------------------------------------------------------------------
-# Final artifacts (placed in BUILD_DIR subfolders)
-# ----------------------------------------------------------------------
 BUILD_JAR     := $(BUILD_WEB_DIR)/videodownloader-$(VERSION).jar
 BUILD_PACKAGE := $(BUILD_PACKAGE_DIR)/videodownloader-jpackage
 BUILD_GRAAL   := $(BUILD_GRAAL_DIR)/videodownloader-graal
 BUILD_PYTHON  := $(BUILD_PYTHON_DIR)/ytdlp
 
-# ----------------------------------------------------------------------
-# JPackage flags
-# ----------------------------------------------------------------------
 JPACKAGE_TARGET_FLAG := $(if $(JP_TARGET),--target-platform $(JP_TARGET),)
 
-# ----------------------------------------------------------------------
-# UPX compression flag (auto-detect)
-# ----------------------------------------------------------------------
 UPX_AVAILABLE := $(shell command -v upx 2>/dev/null)
 NUIKTA_UPX := $(if $(UPX_AVAILABLE),--enable-plugin=upx,)
 
-# ----------------------------------------------------------------------
-# FFmpeg bundling control (1 = include ffmpeg binary, 0 = skip)
-# ----------------------------------------------------------------------
 BUNDLE_FFMPEG ?= 1
 
-# ----------------------------------------------------------------------
-# FFmpeg bundling – detect OS and architecture (used when BUNDLE_FFMPEG=1)
-# ----------------------------------------------------------------------
 UNAME_S       := $(shell uname -s)
 FFMPEG_BIN_DIR:= $(TARGET_PYTHON_DIR)/bin
 
@@ -98,20 +78,13 @@ else
     FFMPEG_OS   := linux
 endif
 
-# ----------------------------------------------------------------------
-# Default target
-# ----------------------------------------------------------------------
 .DEFAULT_GOAL := help
 
-# ======================================================================
-# Phony targets
-# ======================================================================
 .PHONY: help clean test java-test python-test \
         build build-web build-web-graal build-package build-graal \
         update-docker update-docker-no-graal all \
-        python-deps ffmpeg-download
+        python-deps ffmpeg-download build-python
 
-# ----------------------------------------------------------------------
 help:
 	@printf "YT-DLP Online Interface Build System\n\n"
 	@printf "Usage: make <target> [OPTIONS]\n\n"
@@ -139,13 +112,9 @@ help:
 	@printf "Prerequisites for Linux:\n"
 	@printf "  sudo apt install upx-ucl   (required to keep binary < 100 MB)\n"
 
-# ----------------------------------------------------------------------
 clean:
 	rm -rf target $(VENV) .pytest_cache $(BUILD_DIR) $(DOCKER_DIR)
 
-# ======================================================================
-# Python environment
-# ======================================================================
 $(VENV)/bin/activate:
 	$(PY) -m venv $(VENV)
 	$(PIP) install --upgrade pip
@@ -157,9 +126,6 @@ ffmpeg-download:
 	@mkdir -p $(FFMPEG_BIN_DIR)
 	$(PY) scripts/download_ffmpeg.py $(FFMPEG_BIN_DIR) $(FFMPEG_ARCH)
 
-# ----------------------------------------------------------------------
-# Build the single‑file Python executable with Nuitka + optional FFmpeg
-# ----------------------------------------------------------------------
 $(TARGET_PYTHON_EXEC): python-deps $(if $(filter 1,$(BUNDLE_FFMPEG)),ffmpeg-download)
 	@mkdir -p $(TARGET_PYTHON_DIR)
 	$(PYTHON) -m compileall src/main/python
@@ -179,27 +145,20 @@ $(TARGET_PYTHON_EXEC): python-deps $(if $(filter 1,$(BUNDLE_FFMPEG)),ffmpeg-down
 	@echo "Python executable built: $@"
 	@ls -lh $@
 
-# ----------------------------------------------------------------------
-# Centralised copy of the Python executable into the build tree
-# ----------------------------------------------------------------------
 $(BUILD_PYTHON): $(TARGET_PYTHON_EXEC) | $(BUILD_PYTHON_DIR)
 	cp $< $@
-	chmod +x $@
+	$(CHMOD) $@
 
 $(BUILD_PYTHON_DIR):
 	mkdir -p $@
 
-# ======================================================================
-# Maven JAR
-# ======================================================================
+build-python: $(BUILD_PYTHON)
+
 $(TARGET_JAR):
 	$(MVN) -DskipTests package
 
 build: $(TARGET_JAR)
 
-# ======================================================================
-# Web build – JAR + Python in build/web
-# ======================================================================
 $(BUILD_WEB_DIR):
 	mkdir -p $@
 
@@ -209,19 +168,13 @@ $(BUILD_JAR): $(TARGET_JAR) | $(BUILD_WEB_DIR)
 build-web: $(BUILD_JAR) $(BUILD_PYTHON)
 	@echo "Web build complete: $(BUILD_JAR)"
 
-# ----------------------------------------------------------------------
-# Web build with GraalVM native image
-# ----------------------------------------------------------------------
 $(BUILD_WEB_DIR)/videodownloader: $(TARGET_JAR) | $(BUILD_WEB_DIR)
 	native-image -jar $< -o $@ --no-fallback
-	@chmod +x $@
+	$(CHMOD) $@
 
 build-web-graal: $(BUILD_WEB_DIR)/videodownloader $(BUILD_PYTHON)
 	@echo "Web GraalVM build complete: $(BUILD_WEB_DIR)/videodownloader"
 
-# ======================================================================
-# Desktop – jPackage build (now supports extra Maven profiles)
-# ======================================================================
 $(BUILD_PACKAGE_DIR):
 	mkdir -p $@
 
@@ -245,15 +198,12 @@ $(BUILD_PACKAGE): $(TARGET_JAR) $(BUILD_PYTHON) | $(BUILD_PACKAGE_DIR)
 	else \
 		cp $(TARGET_JPACKAGE_DIR)/videodownloader/bin/videodownloader $@; \
 	fi
-	@chmod +x $@
+	$(CHMOD) $@
 	rm -rf target/jpackage-input
 	@echo "Package build complete: $(BUILD_PACKAGE)"
 
 build-package: $(BUILD_PACKAGE)
 
-# ======================================================================
-# Desktop – GraalVM native image
-# ======================================================================
 $(TARGET_NATIVE):
 	$(MVN) -Pdesktop-graal -DskipTests native:compile
 
@@ -262,16 +212,11 @@ $(BUILD_GRAAL_DIR):
 
 $(BUILD_GRAAL): $(TARGET_NATIVE) $(BUILD_PYTHON) | $(BUILD_GRAAL_DIR)
 	cp $(TARGET_NATIVE) $@
-	chmod +x $@
+	$(CHMOD) $@
 
 build-graal: $(BUILD_GRAAL)
 	@echo "GraalVM desktop build complete: $(BUILD_GRAAL)"
 
-build-python: $(BUILD_PYTHON)
-
-# ======================================================================
-# Docker folder preparation
-# ======================================================================
 $(DOCKER_DIR):
 	mkdir -p $@
 
@@ -279,18 +224,16 @@ update-docker: build-web build-web-graal $(DOCKER_DIR)
 	cp $(BUILD_JAR)                     $(DOCKER_DIR)/videodownloader.jar
 	cp $(BUILD_WEB_DIR)/videodownloader $(DOCKER_DIR)/videodownloader
 	cp $(BUILD_PYTHON)                  $(DOCKER_PYTHON)
-	chmod +x $(DOCKER_DIR)/videodownloader $(DOCKER_PYTHON)
+	$(CHMOD) $(DOCKER_DIR)/videodownloader
+	$(CHMOD) $(DOCKER_PYTHON)
 	@echo "Docker artifacts updated"
 
 update-docker-no-graal: build-web $(DOCKER_DIR)
 	cp $(BUILD_JAR)    $(DOCKER_DIR)/videodownloader.jar
 	cp $(BUILD_PYTHON) $(DOCKER_PYTHON)
-	chmod +x $(DOCKER_PYTHON)
+	$(CHMOD) $(DOCKER_PYTHON)
 	@echo "Docker artifacts (JAR only) updated"
 
-# ======================================================================
-# Tests
-# ======================================================================
 python-test: python-deps
 	$(PYTHON) -m unittest discover -s tests/python -p "test_*.py"
 
@@ -299,7 +242,4 @@ java-test:
 
 test: java-test python-test
 
-# ======================================================================
-# Full pipeline
-# ======================================================================
 all: test build-web build-package build-graal
