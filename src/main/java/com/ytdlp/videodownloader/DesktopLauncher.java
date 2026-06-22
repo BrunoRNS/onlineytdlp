@@ -1,5 +1,7 @@
 package com.ytdlp.videodownloader;
 
+import java.awt.BorderLayout;
+
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -17,6 +19,15 @@ public class DesktopLauncher {
 
             SwingUtilities.invokeLater(() -> {
                 JFrame frame = new MainFrame();
+
+                boolean is64 = System.getProperty("os.arch").contains("64");
+
+                if (is64) {
+                    frame.add(new WebViewPanel(), BorderLayout.CENTER);
+                } else {
+                    frame.add(new SwingDownloadPanel(), BorderLayout.CENTER);
+                }
+                frame.pack();
                 frame.setVisible(true);
             });
         } catch (Exception e) {

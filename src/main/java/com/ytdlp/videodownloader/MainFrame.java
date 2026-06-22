@@ -1,11 +1,8 @@
 package com.ytdlp.videodownloader;
 
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
-
-import javafx.embed.swing.JFXPanel;
 
 public class MainFrame extends JFrame {
 
@@ -15,13 +12,7 @@ public class MainFrame extends JFrame {
         this.setResizable(false);
         this.setAutoRequestFocus(true);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setLayout(new FlowLayout());
-
-        JFXPanel mainPanel = new WebViewPanel();
-        mainPanel.setPreferredSize(new Dimension(800, 800));
-
-        this.add(mainPanel);
-        this.pack();
+        this.setLayout(new BorderLayout());
     }
 
 }

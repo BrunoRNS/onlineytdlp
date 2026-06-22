@@ -1,12 +1,5 @@
 FROM debian:stable-slim
 
-RUN apt-get update && apt-get install -y \
-    ffmpeg \
-    nodejs \
-    npm \
-    ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
-
 COPY videodownloader /app/videodownloader
 COPY ytdlp /usr/local/bin/ytdlp
 

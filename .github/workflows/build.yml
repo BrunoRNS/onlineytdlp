@@ -6,157 +6,165 @@ on:
   pull_request:
 
 jobs:
-  build-windows-x64:
+  # ==========================================================================
+  # Windows x64 – jpackage
+  # ==========================================================================
+  build-windows-x64-jpackage:
     runs-on: windows-latest
-    name: "Build Windows x64"
+    name: "Windows x64 - jpackage"
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Java 17 (x64)
-        uses: actions/setup-java@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
           architecture: x64
           cache: maven
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-
-      - name: Build Python executable
-        run: make build-python
-
-      - name: Build web app
-        run: make build-web
-
-      - name: Build package with jpackage
-        run: make build-package JP_TARGET=win-x64
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+      - run: make build-python
+      - run: make build-package JP_TARGET=win-x64
+      - uses: actions/upload-artifact@v4
         with:
-          name: windows-x64
+          name: windows-x64-jpackage
           path: |
-            build/web/
             build/package/
             build/python/
 
-  build-windows-x86:
+  # ==========================================================================
+  # Windows x64 – GraalVM
+  # ==========================================================================
+  build-windows-x64-graal:
     runs-on: windows-latest
-    name: "Build Windows x86"
+    name: "Windows x64 - GraalVM"
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: graalvm
+          java-version: '17'
+          architecture: x64
+          cache: maven
+      - run: gu install native-image
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: make build-python
+      - run: make build-graal
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-x64-graal
+          path: |
+            build/graal/
+            build/python/
 
-      - name: Set up Java 17 (x86)
-        uses: actions/setup-java@v4
+  # ==========================================================================
+  # Windows x86 – jpackage (GraalVM não suporta 32-bit)
+  # ==========================================================================
+  build-windows-x86-jpackage:
+    runs-on: windows-latest
+    name: "Windows x86 - jpackage"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
           architecture: x86
           cache: maven
-
-      - name: Set up Python (x86)
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
           architecture: x86
-
-      - name: Build Python executable
-        run: make build-python
-
-      - name: Build web app
-        run: make build-web
-
-      - name: Build package with jpackage
-        run: make build-package JP_TARGET=win
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+      - run: make build-python
+      - run: make build-package JP_TARGET=win MVN_EXTRA_PROFILES=,win-x86   # ← alterado
+      - uses: actions/upload-artifact@v4
         with:
-          name: windows-x86
+          name: windows-x86-jpackage
           path: |
-            build/web/
             build/package/
             build/python/
 
-  build-macos-x64:
-    runs-on: macos-13
-    name: "Build macOS x64 (Intel)"
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Java 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-          cache: maven
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Install system dependencies
-        run: brew install pkg-config openssl
-
-      - name: Build Python executable
-        run: make build-python
-
-      - name: Build web app
-        run: make build-web
-
-      - name: Build package with jpackage
-        run: make build-package JP_TARGET=mac
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: macos-x64-intel
-          path: |
-            build/web/
-            build/package/
-            build/python/
-
-  build-linux-x64:
+  # ==========================================================================
+  # Linux x64 – jpackage
+  # ==========================================================================
+  build-linux-x64-jpackage:
     runs-on: ubuntu-latest
-    name: "Build Linux x64"
+    name: "Linux x64 - jpackage"
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Java 17
-        uses: actions/setup-java@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
           cache: maven
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-
-      - name: Install system dependencies
-        run: |
+      - run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential pkg-config libffi-dev libssl-dev
-
-      - name: Build Python executable
-        run: make build-python
-
-      - name: Build web app
-        run: make build-web
-
-      - name: Build package with jpackage
-        run: make build-package JP_TARGET=linux
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+          sudo apt-get install -y build-essential pkg-config libffi-dev libssl-dev upx-ucl
+      - run: make build-python
+      - run: make build-package JP_TARGET=linux
+      - uses: actions/upload-artifact@v4
         with:
-          name: linux-x64
+          name: linux-x64-jpackage
           path: |
-            build/web/
             build/package/
             build/python/
+
+  # ==========================================================================
+  # Linux x64 – GraalVM
+  # ==========================================================================
+  build-linux-x64-graal:
+    runs-on: ubuntu-latest
+    name: "Linux x64 - GraalVM"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: graalvm
+          java-version: '17'
+          cache: maven
+      - run: gu install native-image
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libffi-dev libssl-dev upx-ucl
+      - run: make build-python
+      - run: make build-graal
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-x64-graal
+          path: |
+            build/graal/
+            build/python/
+
+  # ==========================================================================
+  # Web / Docker
+  # ==========================================================================
+  build-web-docker:
+    runs-on: ubuntu-latest
+    name: "Web/Docker"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libffi-dev libssl-dev upx-ucl
+      - run: make build-web
+      - run: make update-docker
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web-docker
+          path: docker/

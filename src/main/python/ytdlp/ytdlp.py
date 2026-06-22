@@ -1,4 +1,5 @@
 import os
+import sys
 
 if os.environ.get("NUITKA_ONEFILE_PARENT") or getattr(sys, "frozen", False):
     base_path = os.path.dirname(sys.argv[0]) if not os.environ.get("NUITKA_ONEFILE_PARENT") else os.path.dirname(sys.executable)
@@ -10,8 +11,6 @@ from pydub import AudioSegment # type: ignore
 from pytubefix import YouTube # type: ignore
 
 from typing import Any, List, Optional, Tuple
-
-import sys
 
 import logging
 
