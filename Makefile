@@ -15,11 +15,13 @@ PY := $(if $(filter yes,$(OS_IS_WINDOWS)),python,python3)
 
 ifeq ($(OS_IS_WINDOWS),yes)
     VENV := .venv
+    VENV_ACTIVATE := $(VENV)/Scripts/activate
     PIP := $(VENV)/Scripts/pip
     PYTHON := $(VENV)/Scripts/python
     CHMOD := @rem
 else
     VENV := .venv
+    VENV_ACTIVATE := $(VENV)/bin/activate
     PIP := $(VENV)/bin/pip
     PYTHON := $(VENV)/bin/python
     CHMOD := chmod +x
@@ -115,11 +117,11 @@ help:
 clean:
 	rm -rf target $(VENV) .pytest_cache $(BUILD_DIR) $(DOCKER_DIR)
 
-$(VENV)/bin/activate:
+$(VENV_ACTIVATE):
 	$(PY) -m venv $(VENV)
-	$(PIP) install --upgrade pip
+	$(PYTHON) -m pip install --upgrade pip
 
-python-deps: $(VENV)/bin/activate
+python-deps: $(VENV_ACTIVATE)
 	$(PIP) install -r requirements.txt
 
 ffmpeg-download:
