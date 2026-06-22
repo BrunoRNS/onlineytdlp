@@ -267,6 +267,8 @@ $(BUILD_GRAAL): $(TARGET_NATIVE) $(BUILD_PYTHON) | $(BUILD_GRAAL_DIR)
 build-graal: $(BUILD_GRAAL)
 	@echo "GraalVM desktop build complete: $(BUILD_GRAAL)"
 
+build-python: $(BUILD_PYTHON)
+
 # ======================================================================
 # Docker folder preparation
 # ======================================================================
