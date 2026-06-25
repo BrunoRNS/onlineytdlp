@@ -108,14 +108,12 @@
     </build>
 
     <profiles>
-
         <profile>
             <id>web-app</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
         </profile>
-
         <profile>
             <id>desktop-graal</id>
             <properties>
@@ -130,6 +128,11 @@
                             <mainClass>${exec.mainClass}</mainClass>
                             <buildArgs>
                                 <buildArg>-march=compatibility</buildArg>
+                                <buildArg>-H:+Awt</buildArg>
+                                <buildArg>--enable-all-security-services</buildArg>
+                                <buildArg>-J-Djava.awt.headless=false</buildArg>
+                                <buildArg>--initialize-at-build-time=javax.swing,java.awt</buildArg>
+                                <buildArg>-H:CLibraryPath=${java.home}/lib</buildArg>
                             </buildArgs>
                         </configuration>
                     </plugin>
