@@ -54,6 +54,7 @@ BUILD_GRAAL   := $(BUILD_GRAAL_DIR)/videodownloader-graal
 BUILD_PYTHON  := $(BUILD_PYTHON_DIR)/ytdlp
 
 JPACKAGE_TARGET_FLAG := $(if $(JP_TARGET),--target-platform $(JP_TARGET),)
+NUIKTA_WINDOWS_FLAGS := $(if $(filter yes,$(OS_IS_WINDOWS)),--windows-dependency-tool=pefile,)
 
 UPX_AVAILABLE := $(shell command -v upx 2>/dev/null)
 NUIKTA_UPX := $(if $(UPX_AVAILABLE),--enable-plugin=upx,)
@@ -134,6 +135,8 @@ $(TARGET_PYTHON_EXEC): python-deps $(if $(filter 1,$(BUNDLE_FFMPEG)),ffmpeg-down
 	$(PYTHON) -m nuitka \
 		--onefile \
 		$(NUIKTA_UPX) \
+		$(NUIKTA_WINDOWS_FLAGS) \
+		--assume-yes-for-downloads \
 		--noinclude-unittest-mode=nofollow \
 		--noinclude-pytest-mode=nofollow \
 		--noinclude-setuptools-mode=nofollow \
