@@ -49,7 +49,7 @@ ifeq ($(OS_IS_WINDOWS),yes)
     VENV_ACTIVATE := $(VENV)/Scripts/activate
     PIP := $(VENV)/Scripts/pip
     PYTHON := $(VENV)/Scripts/python
-    CHMOD := @rem
+    CHMOD := true # no need
 else
     VENV := .venv
     VENV_ACTIVATE := $(VENV)/bin/activate
