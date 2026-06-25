@@ -110,10 +110,11 @@ def download_ffmpeg_windows(bin_dir: str, arch: str = "x86_64"):
     """Download FFmpeg for Windows (32-bit or 64-bit)"""
     os.makedirs(bin_dir, exist_ok=True)
     
-    # Determine architecture
+    # Determine architecture and select appropriate build
     if arch == "x86" or arch == "i386" or arch == "32":
-        url = "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win32-gpl.zip"
-        print("Downloading FFmpeg for Windows 32-bit...")
+        # Official BtbN no longer builds 32-bit, use the fork by defisym
+        url = "https://github.com/defisym/FFmpeg-Builds-Win32/releases/download/latest/ffmpeg-master-latest-win32-gpl.zip"
+        print("Downloading FFmpeg for Windows 32-bit (defisym build)...")
     else:
         url = "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip"
         print("Downloading FFmpeg for Windows 64-bit...")
