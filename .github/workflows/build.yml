@@ -36,36 +36,6 @@ jobs:
             build/package/
             build/python/
 
-  build-windows-x64-graal:
-    runs-on: windows-latest
-    name: "Windows x64 - GraalVM"
-    defaults:
-      run:
-        shell: bash
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - uses: graalvm/setup-graalvm@v1
-        with:
-          java-version: '17'
-          distribution: graalvm-community
-          components: native-image
-          cache: maven
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - run: pip install pefile
-      - run: make build-python
-      - run: make build-graal
-      - uses: actions/upload-artifact@v4
-        with:
-          name: windows-x64-graal
-          path: |
-            build/graal/
-            build/python/
-
   build-windows-x86-jpackage:
     runs-on: windows-latest
     name: "Windows x86 - jpackage"
@@ -117,32 +87,6 @@ jobs:
           name: linux-x64-jpackage
           path: |
             build/package/
-            build/python/
-
-  build-linux-x64-graal:
-    runs-on: ubuntu-latest
-    name: "Linux x64 - GraalVM"
-    steps:
-      - uses: actions/checkout@v4
-      - uses: graalvm/setup-graalvm@v1
-        with:
-          java-version: '17'
-          distribution: graalvm-community
-          components: native-image
-          cache: maven
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential pkg-config libffi-dev libssl-dev upx-ucl liblzma-dev xz-utils
-      - run: make build-python
-      - run: make build-graal
-      - uses: actions/upload-artifact@v4
-        with:
-          name: linux-x64-graal
-          path: |
-            build/graal/
             build/python/
 
   build-web-docker:

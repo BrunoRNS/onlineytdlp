@@ -8,7 +8,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.14</version>
+        <version>3.5.16</version>
         <relativePath/>
     </parent>
 
@@ -44,24 +44,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-controls</artifactId>
-            <version>${javafx.version}</version>
-            <classifier>${javafx.platform}</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-swing</artifactId>
-            <version>${javafx.version}</version>
-            <classifier>${javafx.platform}</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-web</artifactId>
-            <version>${javafx.version}</version>
-            <classifier>${javafx.platform}</classifier>
         </dependency>
         <dependency>
             <groupId>org.thymeleaf.extras</groupId>
@@ -114,6 +96,36 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
         </profile>
+
+        <profile>
+            <id>javafx-deps</id>
+            <activation>
+                <property>
+                    <name>!javafx.skip</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>javafx-controls</artifactId>
+                    <version>${javafx.version}</version>
+                    <classifier>${javafx.platform}</classifier>
+                </dependency>
+                <dependency>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>javafx-swing</artifactId>
+                    <version>${javafx.version}</version>
+                    <classifier>${javafx.platform}</classifier>
+                </dependency>
+                <dependency>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>javafx-web</artifactId>
+                    <version>${javafx.version}</version>
+                    <classifier>${javafx.platform}</classifier>
+                </dependency>
+            </dependencies>
+        </profile>
+
         <profile>
             <id>desktop-graal</id>
             <properties>
@@ -128,17 +140,13 @@
                             <mainClass>${exec.mainClass}</mainClass>
                             <buildArgs>
                                 <buildArg>-march=compatibility</buildArg>
-                                <buildArg>--enable-awt</buildArg>
-                                <buildArg>--enable-security-services</buildArg>
-                                <buildArg>-J-Djava.awt.headless=false</buildArg>
-                                <buildArg>--initialize-at-build-time=javax.swing,java.awt</buildArg>
-                                <buildArg>-H:CLibraryPath=${java.home}/lib</buildArg>
                             </buildArgs>
                         </configuration>
                     </plugin>
                 </plugins>
             </build>
         </profile>
+
         <profile>
             <id>desktop-package</id>
             <properties>
@@ -163,6 +171,7 @@
                 </plugins>
             </build>
         </profile>
+
         <profile>
             <id>platform-linux</id>
             <activation>
@@ -198,31 +207,13 @@
                 <javafx.platform>mac</javafx.platform>
             </properties>
         </profile>
+
         <profile>
             <id>win-x86</id>
             <properties>
+                <javafx.skip>true</javafx.skip>
                 <javafx.platform></javafx.platform>
             </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>org.openjfx</groupId>
-                    <artifactId>javafx-controls</artifactId>
-                    <version>${javafx.version}</version>
-                    <scope>provided</scope>
-                </dependency>
-                <dependency>
-                    <groupId>org.openjfx</groupId>
-                    <artifactId>javafx-swing</artifactId>
-                    <version>${javafx.version}</version>
-                    <scope>provided</scope>
-                </dependency>
-                <dependency>
-                    <groupId>org.openjfx</groupId>
-                    <artifactId>javafx-web</artifactId>
-                    <version>${javafx.version}</version>
-                    <scope>provided</scope>
-                </dependency>
-            </dependencies>
             <build>
                 <plugins>
                     <plugin>
