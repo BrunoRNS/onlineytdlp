@@ -3,44 +3,41 @@ package com.ytdlp.videodownloader;
 import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ConfigurableApplicationContext;
+
 public class DesktopLauncher {
-
     public static void main(String[] args) {
+        System.setProperty("java.awt.headless", "false");
+        SpringApplication app = new SpringApplication(VideodownloaderApplication.class);
+        app.setHeadless(false);
+        ConfigurableApplicationContext context = app.run(args);
 
-        try {
-            Thread springThread = new Thread(() -> {
-                VideodownloaderApplication.main(args);
-            }, "SpringBoot");
-            springThread.setDaemon(true);
-            springThread.start();
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame("Yt-dlp Desktop");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-            SwingUtilities.invokeLater(() -> {
-                JFrame frame = new MainFrame();
+            boolean is64 = System.getProperty("os.arch").contains("64");
 
-                boolean is64 = System.getProperty("os.arch").contains("64");
-
-                if (is64) {
-                    frame.add(new WebViewPanel(), BorderLayout.CENTER);
-                } else {
+            if (is64) {
+                try {
+                    Class<?> webViewPanelClass = Class.forName(
+                            "com.ytdlp.videodownloader.WebViewPanel");
+                    JPanel panel = (JPanel) webViewPanelClass
+                            .getDeclaredConstructor().newInstance();
+                    frame.add(panel, BorderLayout.CENTER);
+                } catch (Exception e) {
                     frame.add(new SwingDownloadPanel(), BorderLayout.CENTER);
                 }
-                frame.pack();
-                frame.setVisible(true);
-            });
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(
-                null,
-                "Error: " + e.getMessage() + "\n\nPlease contact the support team: https://github.com/BrunoRNS/onlineytdlp/issues",
-                "ERROR, Failed to launch the application",
-                JOptionPane.ERROR_MESSAGE,
-                null
-            );
-            System.exit(-1);
-        }
+            } else {
+                frame.add(new SwingDownloadPanel(), BorderLayout.CENTER);
+            }
 
+            frame.pack();
+            frame.setVisible(true);
+        });
     }
-    
 }
