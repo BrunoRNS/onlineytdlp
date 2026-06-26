@@ -128,8 +128,8 @@
                             <mainClass>${exec.mainClass}</mainClass>
                             <buildArgs>
                                 <buildArg>-march=compatibility</buildArg>
-                                <buildArg>-H:+Awt</buildArg>
-                                <buildArg>--enable-all-security-services</buildArg>
+                                <buildArg>--enable-awt</buildArg>
+                                <buildArg>--enable-security-services</buildArg>
                                 <buildArg>-J-Djava.awt.headless=false</buildArg>
                                 <buildArg>--initialize-at-build-time=javax.swing,java.awt</buildArg>
                                 <buildArg>-H:CLibraryPath=${java.home}/lib</buildArg>
@@ -139,7 +139,6 @@
                 </plugins>
             </build>
         </profile>
-
         <profile>
             <id>desktop-package</id>
             <properties>
