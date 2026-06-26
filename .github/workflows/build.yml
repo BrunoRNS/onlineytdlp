@@ -56,7 +56,7 @@ jobs:
           architecture: x86
       - run: pip install pefile
       - run: make build-python
-      - run: make build-package MVN_EXTRA_PROFILES=,win-x86
+      - run: make build-package MVN_EXTRA_PROFILES=,win-x86 MVN_OPTS=-Djavafx.skip=true
       - uses: actions/upload-artifact@v4
         with:
           name: windows-x86-jpackage

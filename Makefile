@@ -1,6 +1,8 @@
 SHELL := /bin/bash
 MVN   := bash ./mvnw
 
+MVN_OPTS ?=
+
 PLATFORM := $(shell uname -s 2>/dev/null || echo Windows)
 ifeq ($(findstring MINGW,$(PLATFORM)),MINGW)
     OS_IS_WINDOWS := yes
@@ -181,7 +183,7 @@ $(TARGET_JAR_WEB):
 	@cp $(TARGET_JAR) $@
 
 $(TARGET_JAR_DESKTOP):
-	$(MVN) -Pdesktop-package$(MVN_EXTRA_PROFILES) -DskipTests clean package
+	$(MVN) -Pdesktop-package$(MVN_EXTRA_PROFILES) $(MVN_OPTS) -DskipTests clean package
 	@cp $(TARGET_JAR) $@
 
 build: $(TARGET_JAR_WEB)
